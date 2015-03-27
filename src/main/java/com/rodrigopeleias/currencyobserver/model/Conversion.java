@@ -1,4 +1,4 @@
-package com.rodrigopeleias.currencyobserver;
+package com.rodrigopeleias.currencyobserver.model;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 

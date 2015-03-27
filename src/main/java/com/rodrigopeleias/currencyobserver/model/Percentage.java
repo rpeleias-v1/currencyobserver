@@ -1,4 +1,4 @@
-package com.rodrigopeleias.currencyobserver;
+package com.rodrigopeleias.currencyobserver.model;
 
 public class Percentage {
 	

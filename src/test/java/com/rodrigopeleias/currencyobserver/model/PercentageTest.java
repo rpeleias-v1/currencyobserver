@@ -5,8 +5,6 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.rodrigopeleias.currencyobserver.Percentage;
-
 public class PercentageTest {
 	
 	private Percentage percentage;

@@ -5,8 +5,6 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.rodrigopeleias.currencyobserver.Conversion;
-
 public class ConversionTest {
 	
 	Conversion conversion, previousOverConversion;

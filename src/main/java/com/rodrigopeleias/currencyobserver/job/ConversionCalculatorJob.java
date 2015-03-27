@@ -19,9 +19,9 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import com.rodrigopeleias.currencyobserver.Conversion;
-import com.rodrigopeleias.currencyobserver.Percentage;
 import com.rodrigopeleias.currencyobserver.helper.HipChatHelper;
+import com.rodrigopeleias.currencyobserver.model.Conversion;
+import com.rodrigopeleias.currencyobserver.model.Percentage;
 
 public class ConversionCalculatorJob implements Job{
 	

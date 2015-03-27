@@ -1,4 +1,4 @@
-package com.rodrigopeleias.currencyobserver.model;
+package com.rodrigopeleias.currencyobserver.main;
 
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
