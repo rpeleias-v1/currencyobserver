@@ -25,8 +25,6 @@ public class ConversionCalculatorJob implements Job{
 	
 	private ResourceBundle bundle = ResourceBundle.getBundle("keysConfiguration");
 	
-	private String hipChatAccessToken = "chuL6cprvR8SWDQP5ibkYmpQRwlVmKDtaQCZWpeN";
-
 	public void execute(JobExecutionContext arg0) throws JobExecutionException {
 		try {
 			doExecute();
