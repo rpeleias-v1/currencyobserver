@@ -54,6 +54,12 @@ public class Conversion {
 	public double calculateVariation(Conversion previous) {
 		double variation = this.toAmount / previous.toAmount;
 		double percentage;
+		percentage = verify(variation);
+		return percentage;
+	}
+
+	private double verify(double variation) {
+		double percentage;
 		if (variation >= 1) {
 			percentage = (variation - 1) * 100;
 		} else {

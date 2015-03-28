@@ -5,13 +5,17 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.rodrigopeleias.currencyobserver.model.builder.PercentageBuilder;
+
 public class PercentageTest {
 	
 	private Percentage percentage;
 	
 	@Before
 	public void setUp() {
-		percentage = new Percentage(10);	
+		percentage = new PercentageBuilder()
+							.with(10f)
+							.build();	
 	}
 
 	@Test
