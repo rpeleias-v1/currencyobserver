@@ -1,6 +1,7 @@
 package com.rodrigopeleias.currencyobserver.job;
 
 import java.io.IOException;
+import java.util.ResourceBundle;
 
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -22,11 +23,13 @@ public class ConversionCalculatorJob implements Job{
 	
 	private static Conversion previousConversion;
 	
+	private ResourceBundle bundle = ResourceBundle.getBundle("keysConfiguration");
+	
 	private String hipChatAccessToken = "chuL6cprvR8SWDQP5ibkYmpQRwlVmKDtaQCZWpeN";
 
 	public void execute(JobExecutionContext arg0) throws JobExecutionException {
 		try {
-			doExecute();			
+			doExecute();
 		} catch ( UnirestException | IOException  ex) {
 			ex.printStackTrace();
 		}		
@@ -53,7 +56,7 @@ public class ConversionCalculatorJob implements Job{
 
 	private JSONObject consumeCurrencyService() throws UnirestException {
 		HttpResponse<JsonNode> response = Unirest.get("https://currencyconverter.p.mashape.com/?from=USD&from_amount=1&to=BRL")
-				.header("X-Mashape-Key", "5vFG4l0TdEmshwwd7HYYYlWlRZyLp129D9fjsn29gxyfoFBm8T")
+				.header("X-Mashape-Key", bundle.getString("mashape.key"))
 				.header("Accept", "application/json")
 				.asJson();
 		JSONObject conversionResponse = response.getBody().getObject();
@@ -61,14 +64,15 @@ public class ConversionCalculatorJob implements Job{
 	}
 
 	private void sendHipChatMessage(Conversion conversion, Percentage percentage) {
-		HipChatHelper hipChat = new HipChatHelper(hipChatAccessToken);				
-		hipChat.sendMessage("216979", "Previous Conversion = " + previousConversion);
-		hipChat.sendMessage("216979", "Previous Conversion = " + conversion);
+		HipChatHelper hipChat = new HipChatHelper(bundle.getString("hipChat.accessToken"));	
+		String hipChatRoomNumber = bundle.getString("hipchat.roomNumber");
+		hipChat.sendMessage(hipChatRoomNumber, "Previous Conversion = " + previousConversion);
+		hipChat.sendMessage(hipChatRoomNumber, "Previous Conversion = " + conversion);
 		if (percentage.isOver(conversion.calculateVariation(previousConversion))) {					
-			hipChat.sendMessage("216979", "Conversion is over 10% in relation to previous information.");
+			hipChat.sendMessage(hipChatRoomNumber, "Conversion is over 10% in relation to previous information.");
 		}
 		else {
-			hipChat.sendMessage("216979", "Conversion is under 10% in relation to previous information");										
+			hipChat.sendMessage(hipChatRoomNumber, "Conversion is under 10% in relation to previous information");										
 		}
 	}
 }
