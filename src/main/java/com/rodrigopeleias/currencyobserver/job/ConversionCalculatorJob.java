@@ -1,14 +1,9 @@
 package com.rodrigopeleias.currencyobserver.job;
 
-import io.evanwong.oss.hipchat.v2.HipChatClient;
-import io.evanwong.oss.hipchat.v2.commons.NoContent;
-import io.evanwong.oss.hipchat.v2.rooms.MessageColor;
-import io.evanwong.oss.hipchat.v2.rooms.SendRoomNotificationRequestBuilder;
-
 import java.io.IOException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONObject;
 import org.quartz.Job;
@@ -31,35 +26,49 @@ public class ConversionCalculatorJob implements Job{
 
 	public void execute(JobExecutionContext arg0) throws JobExecutionException {
 		try {
-			HttpResponse<JsonNode> response = Unirest.get("https://currencyconverter.p.mashape.com/?from=USD&from_amount=1&to=BRL")
-					.header("X-Mashape-Key", "5vFG4l0TdEmshwwd7HYYYlWlRZyLp129D9fjsn29gxyfoFBm8T")
-					.header("Accept", "application/json")
-					.asJson();
-			JSONObject conversionResponse = response.getBody().getObject();
-			
-			ObjectMapper mapper = new ObjectMapper();
-			Conversion conversion = mapper.readValue(conversionResponse.toString(), Conversion.class);
-			System.out.println(conversion);
-			
-			Percentage percentage = new Percentage(10f);
-
-			if (previousConversion != null) {
-				HipChatHelper hipChat = new HipChatHelper(hipChatAccessToken);				
-				hipChat.sendMessage("216979", "Previous Conversion = " + previousConversion);
-				hipChat.sendMessage("216979", "Previous Conversion = " + conversion);
-				if (percentage.isOver(conversion.calculateVariation(previousConversion))) {					
-					hipChat.sendMessage("216979", "Conversion is over 10% in relation to previous information.");
-				}
-				else {
-					hipChat.sendMessage("216979", "Conversion is under 10% in relation to previous information");										
-				}				
-			}	
-			previousConversion = conversion;
-			
+			doExecute();			
 		} catch ( UnirestException | IOException  ex) {
 			ex.printStackTrace();
-		}
-		
+		}		
 	}
 
+	private void doExecute() throws UnirestException, IOException,
+			JsonParseException, JsonMappingException {
+		JSONObject conversionResponse = consumeCurrencyService();			
+		Conversion conversion = mapJsonToObject(conversionResponse);			
+		Percentage percentage = new Percentage(10f);
+		if (previousConversion != null) {
+			sendHipChatMessage(conversion, percentage);				
+		}	
+		previousConversion = conversion;
+	}
+
+	private Conversion mapJsonToObject(JSONObject conversionResponse)
+			throws IOException, JsonParseException, JsonMappingException {
+		ObjectMapper mapper = new ObjectMapper();
+		Conversion conversion = mapper.readValue(conversionResponse.toString(), Conversion.class);
+		System.out.println(conversion);
+		return conversion;
+	}
+
+	private JSONObject consumeCurrencyService() throws UnirestException {
+		HttpResponse<JsonNode> response = Unirest.get("https://currencyconverter.p.mashape.com/?from=USD&from_amount=1&to=BRL")
+				.header("X-Mashape-Key", "5vFG4l0TdEmshwwd7HYYYlWlRZyLp129D9fjsn29gxyfoFBm8T")
+				.header("Accept", "application/json")
+				.asJson();
+		JSONObject conversionResponse = response.getBody().getObject();
+		return conversionResponse;
+	}
+
+	private void sendHipChatMessage(Conversion conversion, Percentage percentage) {
+		HipChatHelper hipChat = new HipChatHelper(hipChatAccessToken);				
+		hipChat.sendMessage("216979", "Previous Conversion = " + previousConversion);
+		hipChat.sendMessage("216979", "Previous Conversion = " + conversion);
+		if (percentage.isOver(conversion.calculateVariation(previousConversion))) {					
+			hipChat.sendMessage("216979", "Conversion is over 10% in relation to previous information.");
+		}
+		else {
+			hipChat.sendMessage("216979", "Conversion is under 10% in relation to previous information");										
+		}
+	}
 }

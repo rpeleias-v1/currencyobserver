@@ -29,8 +29,7 @@ public class CurrencyObserverMain {
 				.withSchedule(simpleSchedule()
 						.withIntervalInSeconds(5)
 						.repeatForever())
-				.build();
-		
+				.build();		
 		sched.scheduleJob(job, trigger);
 	}
 
